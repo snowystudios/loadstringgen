@@ -39,6 +39,7 @@
 <input id="content" value="Snowy Test"><br>
 
 <button onclick="generate()">Generate</button>
+<button onclick="copyAll()">Copy All</button>
 
 <pre id="output"></pre>
 
@@ -46,30 +47,36 @@
 async function generate() {
   const count = document.getElementById("count").value;
   const content = document.getElementById("content").value;
+  const output = document.getElementById("output");
+
+  output.textContent = "Generating...";
 
   try {
     const res = await fetch("https://backendloadstringgen.onrender.com/generate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        fileCount: count,
-        fileContent: content
-      })
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ fileCount: count, fileContent: content })
     });
 
     if (!res.ok) {
       const errorText = await res.text();
-      document.getElementById("output").textContent = "Error: " + errorText;
+      output.textContent = "Error: " + errorText;
       return;
     }
 
     const data = await res.json();
-    document.getElementById("output").textContent = data.links.join("\n");
+    output.textContent = data.links.join("\n");
+
   } catch (err) {
-    document.getElementById("output").textContent = "Error: " + err.message;
+    output.textContent = "Error: " + err.message;
   }
+}
+
+function copyAll() {
+  const output = document.getElementById("output");
+  navigator.clipboard.writeText(output.textContent)
+    .then(() => alert("Copied all scripts!"))
+    .catch(err => alert("Failed to copy: " + err));
 }
 </script>
 
