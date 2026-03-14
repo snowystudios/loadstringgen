@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Snowy Script Generator</title>
+  <title>Snowy Lua Generator</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      padding: 40px;
+    }
+    input{
+      padding: 8px;
+      margin: 5px 0;
+      width: 300px;
+    }
+    button{
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    pre{
+      background: #222;
+      padding: 20px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Generate Lua Files</h2>
+<h2>Lua Script Generator</h2>
 
-<label>File Count:</label>
-<input id="fileCount" type="number" value="5"><br><br>
+<label>File Count</label><br>
+<input id="count" type="number" value="5"><br>
 
-<label>File Content:</label>
-<input id="fileContent" type="text" value="Snowy Test"><br><br>
+<label>File Content</label><br>
+<input id="content" value="Snowy Test"><br>
 
 <button onclick="generate()">Generate</button>
 
@@ -19,24 +44,32 @@
 
 <script>
 async function generate() {
+  const count = document.getElementById("count").value;
+  const content = document.getElementById("content").value;
 
-  const data = {
-    fileCount: document.getElementById("fileCount").value,
-    fileContent: document.getElementById("fileContent").value
-  };
+  try {
+    const res = await fetch("https://backendloadstringgen.onrender.com/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fileCount: count,
+        fileContent: content
+      })
+    });
 
-  const res = await fetch("https://YOUR_BACKEND_URL/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
+    if (!res.ok) {
+      const errorText = await res.text();
+      document.getElementById("output").textContent = "Error: " + errorText;
+      return;
+    }
 
-  const result = await res.json();
-
-  document.getElementById("output").textContent =
-    result.links.join("\n");
+    const data = await res.json();
+    document.getElementById("output").textContent = data.links.join("\n");
+  } catch (err) {
+    document.getElementById("output").textContent = "Error: " + err.message;
+  }
 }
 </script>
 
