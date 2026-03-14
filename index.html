@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Snowy Script Generator</title>
+</head>
+<body>
+
+<h2>Generate Lua Files</h2>
+
+<label>File Count:</label>
+<input id="fileCount" type="number" value="5"><br><br>
+
+<label>File Content:</label>
+<input id="fileContent" type="text" value="Snowy Test"><br><br>
+
+<button onclick="generate()">Generate</button>
+
+<pre id="output"></pre>
+
+<script>
+async function generate() {
+
+  const data = {
+    fileCount: document.getElementById("fileCount").value,
+    fileContent: document.getElementById("fileContent").value
+  };
+
+  const res = await fetch("https://YOUR_BACKEND_URL/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+
+  document.getElementById("output").textContent =
+    result.links.join("\n");
+}
+</script>
+
+</body>
+</html>
