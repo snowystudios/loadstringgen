@@ -3,7 +3,7 @@
 <head>
   <title>Admin Panel - Snowy Lua Generator</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #111; color: white; padding: 40px; }
+    body { font-family: Arial; background: #111; color: white; padding: 40px; }
     input, select { padding: 8px; margin: 5px 0; width: 300px; }
     button { padding: 10px 20px; cursor: pointer; margin-top: 10px; }
     .hidden { display: none; }
@@ -42,14 +42,17 @@
 </div>
 
 <script>
+const API_URL = "https://backendloadstringgen.onrender.com"; // Replace with your backend URL
+
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
   try {
-    const res = await fetch("/admin/login", {
+    const res = await fetch(`${API_URL}/admin/login`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
+      credentials: "include",
       body: JSON.stringify({ username, password })
     });
 
@@ -67,13 +70,13 @@ async function login() {
 }
 
 async function logout() {
-  await fetch("/admin/logout", { method: "POST" });
+  await fetch(`${API_URL}/admin/logout`, { method: "POST", credentials: "include" });
   document.getElementById("loginDiv").classList.remove("hidden");
   document.getElementById("adminDiv").classList.add("hidden");
 }
 
 async function loadConfig() {
-  const res = await fetch("/admin/config");
+  const res = await fetch(`${API_URL}/admin/config`, { credentials: "include" });
   const data = await res.json();
   document.getElementById("maxGens").value = data.max_gens_per_user;
   document.getElementById("fileMode").value = data.file_content_mode;
@@ -85,9 +88,10 @@ async function saveConfig() {
   const fileMode = document.getElementById("fileMode").value;
   const permContent = document.getElementById("permContent").value;
 
-  const res = await fetch("/admin/config", {
+  const res = await fetch(`${API_URL}/admin/config`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
+    credentials: "include",
     body: JSON.stringify({
       max_gens_per_user: maxGens,
       file_content_mode: fileMode,
