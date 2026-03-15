@@ -1,107 +1,203 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Panel - Snowy Lua Generator</title>
-  <style>
-    body { font-family: Arial; background: #111; color: white; padding: 40px; }
-    input, select { padding: 8px; margin: 5px 0; width: 300px; }
-    button { padding: 10px 20px; cursor: pointer; margin-top: 10px; }
-    .hidden { display: none; }
-  </style>
+<title>Snowy Admin Panel</title>
+
+<style>
+body{
+font-family:Arial;
+background:#111;
+color:white;
+padding:40px;
+}
+
+input,select{
+padding:8px;
+margin:5px 0;
+width:300px;
+}
+
+button{
+padding:10px 20px;
+cursor:pointer;
+margin-top:10px;
+}
+
+.hidden{
+display:none;
+}
+</style>
 </head>
+
 <body>
 
 <h2>Admin Panel</h2>
 
 <div id="loginDiv">
-  <label>Username:</label><br>
-  <input id="username"><br>
-  <label>Password:</label><br>
-  <input type="password" id="password"><br>
-  <button onclick="login()">Login</button>
-  <p id="loginMsg"></p>
+
+<label>Username</label><br>
+<input id="username"><br>
+
+<label>Password</label><br>
+<input type="password" id="password"><br>
+
+<button onclick="login()">Login</button>
+
+<p id="loginMsg"></p>
+
 </div>
+
 
 <div id="adminDiv" class="hidden">
-  <button onclick="logout()">Logout</button>
-  <h3>Settings</h3>
-  <label>Max Generations per User:</label><br>
-  <input id="maxGens" type="number"><br>
 
-  <label>File Content Mode:</label><br>
-  <select id="fileMode">
-    <option value="user_content">User-defined</option>
-    <option value="permanent_content">Admin-defined</option>
-  </select><br>
+<button onclick="logout()">Logout</button>
 
-  <label>Permanent Content (if admin-defined):</label><br>
-  <input id="permContent" type="text"><br>
+<h3>Generator Settings</h3>
 
-  <button onclick="saveConfig()">Save Config</button>
-  <p id="msg"></p>
+<label>Max Generations Per User</label><br>
+<input id="maxGens" type="number"><br>
+
+<label>File Content Mode</label><br>
+<select id="fileMode">
+
+<option value="user_content">
+User provides content
+</option>
+
+<option value="permanent_content">
+Admin permanent content
+</option>
+
+</select><br>
+
+<label>Permanent Content</label><br>
+<input id="permContent"><br>
+
+<button onclick="saveConfig()">Save Settings</button>
+
+<p id="msg"></p>
+
 </div>
 
+
 <script>
-const API_URL = "https://backendloadstringgen.onrender.com"; // Replace with your backend URL
 
-async function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+const API_URL = "https://backendloadstringgen.onrender.com"
 
-  try {
-    const res = await fetch(`${API_URL}/admin/login`, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      credentials: "include",
-      body: JSON.stringify({ username, password })
-    });
 
-    const data = await res.json();
-    if (res.ok) {
-      document.getElementById("loginDiv").classList.add("hidden");
-      document.getElementById("adminDiv").classList.remove("hidden");
-      loadConfig();
-    } else {
-      document.getElementById("loginMsg").textContent = data.error;
-    }
-  } catch (err) {
-    document.getElementById("loginMsg").textContent = err.message;
-  }
+async function login(){
+
+const username=document.getElementById("username").value
+const password=document.getElementById("password").value
+
+const res=await fetch(API_URL+"/admin/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+credentials:"include",
+
+body:JSON.stringify({
+username,
+password
+})
+
+})
+
+const data=await res.json()
+
+if(res.ok){
+
+document.getElementById("loginDiv").classList.add("hidden")
+document.getElementById("adminDiv").classList.remove("hidden")
+
+loadConfig()
+
+}else{
+
+document.getElementById("loginMsg").textContent=data.error
+
 }
 
-async function logout() {
-  await fetch(`${API_URL}/admin/logout`, { method: "POST", credentials: "include" });
-  document.getElementById("loginDiv").classList.remove("hidden");
-  document.getElementById("adminDiv").classList.add("hidden");
 }
 
-async function loadConfig() {
-  const res = await fetch(`${API_URL}/admin/config`, { credentials: "include" });
-  const data = await res.json();
-  document.getElementById("maxGens").value = data.max_gens_per_user;
-  document.getElementById("fileMode").value = data.file_content_mode;
-  document.getElementById("permContent").value = data.permanent_content;
+
+async function logout(){
+
+await fetch(API_URL+"/admin/logout",{
+
+method:"POST",
+
+credentials:"include"
+
+})
+
+document.getElementById("loginDiv").classList.remove("hidden")
+document.getElementById("adminDiv").classList.add("hidden")
+
 }
 
-async function saveConfig() {
-  const maxGens = document.getElementById("maxGens").value;
-  const fileMode = document.getElementById("fileMode").value;
-  const permContent = document.getElementById("permContent").value;
 
-  const res = await fetch(`${API_URL}/admin/config`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    credentials: "include",
-    body: JSON.stringify({
-      max_gens_per_user: maxGens,
-      file_content_mode: fileMode,
-      permanent_content: permContent
-    })
-  });
+async function loadConfig(){
 
-  const data = await res.json();
-  document.getElementById("msg").textContent = data.success ? "Config saved!" : data.error;
+const res=await fetch(API_URL+"/admin/config",{
+
+credentials:"include"
+
+})
+
+const data=await res.json()
+
+document.getElementById("maxGens").value=data.max_gens_per_user
+document.getElementById("fileMode").value=data.file_content_mode
+document.getElementById("permContent").value=data.permanent_content
+
 }
+
+
+async function saveConfig(){
+
+const maxGens=document.getElementById("maxGens").value
+const fileMode=document.getElementById("fileMode").value
+const permContent=document.getElementById("permContent").value
+
+const res=await fetch(API_URL+"/admin/config",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+credentials:"include",
+
+body:JSON.stringify({
+
+max_gens_per_user:maxGens,
+file_content_mode:fileMode,
+permanent_content:permContent
+
+})
+
+})
+
+const data=await res.json()
+
+if(data.success){
+
+document.getElementById("msg").textContent="Settings saved"
+
+}else{
+
+document.getElementById("msg").textContent=data.error
+
+}
+
+}
+
 </script>
 
 </body>
